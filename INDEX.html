@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+
+    .question-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-container h2 {
+      font-size: 20px;
+    }
+
+    .options {
+      margin: 20px 0;
+    }
+
+    .option {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+    }
+
+    .option:hover {
+      background-color: #e0e0e0;
+    }
+
+    .timer {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="question-container">
+    <div class="timer" id="timer">Time Left: 10s</div>
+    <h2 id="question">What is the capital of France?</h2>
+    <div class="options">
+      <div class="option" onclick="selectAnswer('Berlin')">Berlin</div>
+      <div class="option" onclick="selectAnswer('Madrid')">Madrid</div>
+      <div class="option" onclick="selectAnswer('Paris')">Paris</div>
+      <div class="option" onclick="selectAnswer('Rome')">Rome</div>
+    </div>
+    <button id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is the capital of France?",
+        options: ["Berlin", "Madrid", "Paris", "Rome"],
+        answer: "Paris"
+      },
+      {
+        question: "What is the currency of Japan?",
+        options: ["Yuan", "Yen", "Won", "Ringgit"],
+        answer: "Yen"
+      },
+      {
+        question: "Which continent is Australia located in?",
+        options: ["Europe", "Asia", "Oceania", "Africa"],
+        answer: "Oceania"
+      },
+      {
+        question: "Which is the longest river in the world?",
+        options: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+        answer: "Nile"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timeLeft = 10;
+    let timerInterval;
+
+    function displayQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      document.getElementById('question').textContent = currentQuestion.question;
+      const options = document.querySelectorAll('.option');
+      options.forEach((option, index) => {
+        option.textContent = currentQuestion.options[index];
+      });
+
+      document.getElementById('nextBtn').disabled = true;
+      startTimer();
+    }
+
+    function startTimer() {
+      timeLeft = 10;
+      document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `Time Left: ${timeLeft}s`;
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          submitAnswer(); // Automatically submit when time is up
+        }
+      }, 1000);
+    }
+
+    function selectAnswer(answer) {
+      const correctAnswer = questions[currentQuestionIndex].answer;
+      if (answer === correctAnswer) {
+        score++;
+      }
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function submitAnswer() {
+      const selectedAnswer = document.querySelector('.option.selected');
+      if (selectedAnswer) {
+        const correctAnswer = questions[currentQuestionIndex].answer;
+        if (selectedAnswer.textContent === correctAnswer) {
+          score++;
+        }
+      }
+      document.getElementById('nextBtn').disabled = false;
+    }
+
+    function endQuiz() {
+      alert(`Quiz Over! Your final score is ${score} out of ${questions.length}`);
+    }
+
+    // Initializing quiz
+    displayQuestion();
+  </script>
+</body>
+</html>
